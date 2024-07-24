@@ -1,23 +1,14 @@
-// import { createStore, applyMiddleware } from 'redux';
-// import { persistStore } from 'redux-persist';
-// import logger from 'redux-logger';
-// import thunk from 'redux-thunk';
-// import rootReducer from './root-reducer';
-
-// const middlewares = [thunk];
-
-// if (process.env.NODE_ENV === 'development') {
-//   middlewares.push(logger);
-// }
-
-// export const store = createStore(rootReducer, applyMiddleware(...middlewares));
-
-// export const persistor = persistStore(store);
-
-// export default { store, persistor }
-
 import { configureStore } from "@reduxjs/toolkit";
+import cartSlice from "./cart/cartSlice";
+import directorySlice from "./directory/directorySlice";
+import shopSlice from "./shop/shopSlice";
+import userSlice from "./user/userSlice";
 
 export default configureStore({
-  reducer: {},
+  reducer: {
+    cart: cartSlice,
+    directory: directorySlice,
+    shop: shopSlice,
+    user: userSlice,
+  },
 });
