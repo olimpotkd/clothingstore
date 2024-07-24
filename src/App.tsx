@@ -1,0 +1,72 @@
+import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import "./App.css";
+
+import HomePage from "./pages/homepage/homepage.component.jsx";
+import ShopPage from "./pages/shop/shop.component.jsx";
+import Header from "./components/header/header.component.jsx";
+import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component.jsx";
+import CheckoutPage from "./pages/checkout/checkout.component";
+
+import {
+  auth,
+  createUserProfileDocument /*addCollectionAndDocuments*/,
+} from "./firebase/firebase.utils";
+import { setCurrentUser } from "./redux/user/user.actions";
+import { selectCurrentUser } from "./redux/user/user.selectors";
+// import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
+
+const App = () => {
+  const dispatch = useDispatch();
+
+  const [unsubscribeFromAuth, setUnsubscribeFromAuth] = useState(() => {});
+
+  const currentUser = useSelector(selectCurrentUser);
+
+  useEffect(() => {
+    const unsubscribeFunction = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+
+        userRef.onSnapshot((snapShot) => {
+          dispatch(setCurrentUser({ id: snapShot.id, ...snapShot.data() }));
+        });
+      }
+
+      setUnsubscribeFromAuth(unsubscribeFunction);
+
+      // TODO DISPATCH
+      setCurrentUser(userAuth);
+      // addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({ title, items })));
+    });
+
+    // TODO - Consider changing to useCallback
+    return () => {
+      unsubscribeFromAuth && unsubscribeFromAuth();
+    };
+  }, [unsubscribeFromAuth, dispatch]);
+
+  return (
+    <div>
+      <Header />
+      <Routes>
+        <Route path="/">
+          <HomePage />
+        </Route>
+        <Route path="/shop">
+          <ShopPage />
+        </Route>
+        <Route path="/checkout">
+          <CheckoutPage />
+        </Route>
+        <Route path="/signin">
+          {currentUser ? <Navigate to="/" /> : <SignInAndSignUpPage />}
+        </Route>
+      </Routes>
+    </div>
+  );
+};
+
+export default App;
