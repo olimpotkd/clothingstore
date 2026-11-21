@@ -1,31 +1,25 @@
 import React from 'react';
 import { Routes, Route } from 'react-router';
-import { connect } from 'react-redux';
 
-import { fetchCollectionsStartAsync } from '../../redux/shop/shop.actions';
+import useCollections from '../../hooks/use-collections';
+import Spinner from '../../components/spinner/spinner.component';
+import CollectionsOverview from '../../components/collections-overview/collections-overview.component';
+import CollectionPage from '../collection/collection.component';
 
-import CollectionsOverviewContainer from '../../components/collections-overview/collections-overview.container';
-import CollectionPageContainer from '../collection/collection.container';
+const ShopPage = () => {
+  const { collections, isLoading, error } = useCollections();
 
-class ShopPage extends React.Component {
-  componentDidMount() {
-    const { fetchCollectionsStartAsync } = this.props;
-    fetchCollectionsStartAsync();
-  }
+  if (isLoading) return <Spinner />;
+  if (error) return <p className="shop-error">Couldn't load the shop. Please try again later.</p>;
 
-  render() {
-    return (
-      <div className="shop-page">
-        <Routes>
-          <Route index element={<CollectionsOverviewContainer />} />
-          <Route path=":collectionId" element={<CollectionPageContainer />} />
-        </Routes>
-      </div>
-    )
-  }
-}
-  
-const mapDispatchToProps = dispatch => ({
-  fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync())
-})
-export default connect(null, mapDispatchToProps)(ShopPage);
+  return (
+    <div className="shop-page">
+      <Routes>
+        <Route index element={<CollectionsOverview collections={Object.values(collections)} />} />
+        <Route path=":collectionId" element={<CollectionPage collections={collections} />} />
+      </Routes>
+    </div>
+  );
+};
+
+export default ShopPage;

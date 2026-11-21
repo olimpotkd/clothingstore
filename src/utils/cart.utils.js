@@ -24,3 +24,6 @@ export const removeItemFromCart = (cartItems, cartItemToRemove) => {
     : cartItem
   );
 }
+
+export const clearItemFromCart = (cartItems, cartItemToClear) =>
+  cartItems.filter(cartItem => cartItem.id !== cartItemToClear.id);
