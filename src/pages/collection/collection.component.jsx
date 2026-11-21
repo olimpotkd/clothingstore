@@ -1,15 +1,22 @@
 import React from 'react';
 import { useParams } from 'react-router';
-import { useSelector } from 'react-redux';
 
 import CollectionItem from '../../components/collection-item/collection-item.component.jsx'
-import { selectCollection } from '../../redux/shop/shop.selectors';
 
 import './collection.styles.scss';
 
-const CollectionPage = () => {
+const CollectionPage = ({ collections }) => {
   const { collectionId } = useParams();
-  const collection = useSelector(selectCollection(collectionId));
+  const collection = collections[collectionId];
+
+  if (!collection) {
+    return (
+      <div className="collection-page">
+        <h2 className='title'>Collection not found</h2>
+      </div>
+    );
+  }
+
   const { title, items } = collection;
 
   return (
