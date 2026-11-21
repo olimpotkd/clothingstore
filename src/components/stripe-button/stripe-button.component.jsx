@@ -1,5 +1,8 @@
 import React from 'react';
-import StripeCheckout from 'react-stripe-checkout';
+import StripeCheckoutModule from 'react-stripe-checkout';
+
+// react-stripe-checkout is CommonJS-only; Vite hands us the whole module object
+const StripeCheckout = StripeCheckoutModule.default ?? StripeCheckoutModule;
 
 const StripeCheckoutButton = ({ price }) => {
   //stripe needs values to be in cents
